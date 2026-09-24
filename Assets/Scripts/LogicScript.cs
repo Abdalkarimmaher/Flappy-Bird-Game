@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -10,23 +8,44 @@ public class LogicScript : MonoBehaviour
     public Text scoreText;
     public GameObject gameOverScreen;
 
-    [ContextMenu("Increase Score")]
-    public void addScore(int scoreToAdd)
+    // Game state flag
+    public bool gameIsOver = false;
+
+    // Audio clips
+    public AudioClip flapClip;
+    public AudioClip pointClip;
+    public AudioClip hitClip;
+    public AudioClip dieClip;
+    public AudioClip swooshClip;
+
+    /// Play sound from Main Camera
+    public void PlayClip(AudioClip clip)
     {
-        playerScore = playerScore + scoreToAdd;
-        scoreText.text = playerScore.ToString();
+        if (clip == null) return;
+
+        AudioSource camAudio = Camera.main?.GetComponent<AudioSource>();
+        if (camAudio != null)
+            camAudio.PlayOneShot(clip);
     }
 
-    public void restartGame()
+    public void addScore(int scoreToAdd)
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        if (gameIsOver) return;   // stop scoring after death
+
+        playerScore += scoreToAdd;
+        scoreText.text = playerScore.ToString();
     }
 
     public void gameOver()
     {
+        gameIsOver = true;        //  THIS IS THE KEY LINE
         gameOverScreen.SetActive(true);
     }
 
-
-
+    public void restartGame()
+    {
+        gameIsOver = false;       // reset flag
+        PlayClip(swooshClip);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
 }

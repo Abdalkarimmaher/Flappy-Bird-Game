@@ -1,29 +1,25 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PipeMiddleScript : MonoBehaviour
 {
     public LogicScript logic;
 
-    // Start is called before the first frame update
     void Start()
     {
-        logic = GameObject.FindGameObjectWithTag("Logic").GetComponent<LogicScript>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        if (logic == null)
+        {
+            GameObject go = GameObject.FindGameObjectWithTag("Logic");
+            if (go != null) logic = go.GetComponent<LogicScript>();
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.layer == 3)
+        // Only give points when the PLAYER passes through the score zone
+        if (collision.CompareTag("Player"))
         {
             logic.addScore(1);
+            logic.PlayClip(logic.pointClip);
         }
-        
     }
 }
